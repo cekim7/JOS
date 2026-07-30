@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Journal of Open Sciences</title>
+    <style>
+        body { font-family: sans-serif; margin: 2rem; }
+        .paper { border: 1px solid #ccc; padding: 1rem; margin-bottom: 1rem; border-radius: 5px; }
+        .paper h2 { margin-top: 0; }
+        .meta { color: #555; font-size: 0.9rem; }
+        nav { margin-bottom: 2rem; }
+        nav a { margin-right: 1rem; text-decoration: none; color: blue; }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="/">Home</a>
+        <a href="/submit.html">Submit Paper</a>
+    </nav>
+    <h1>Journal of Open Sciences</h1>
+    <h2>Published Papers</h2>
+    <div id="papers-list">Loading papers...</div>
+
+    <script>
+        function escapeHTML(str) {
+            return str.replace(/[&<>'"]/g,
+                tag => ({
+                    '&': '&amp;',
+                    '<': '&lt;',
+                    '>': '&gt;',
+                    "'": '&#39;',
+                    '"': '&quot;'
+                }[tag] || tag)
+            );
+        }
+
+        fetch('/api/papers')
+            .then(res => res.json())
+            .then(papers => {
+                const list = document.getElementById('papers-list');
+                if (papers.length === 0) {
+                    list.innerHTML = '<p>No papers published yet.</p>';
+                    return;
+                }
+                list.innerHTML = papers.map(paper => `
+                    <div class="paper">
+                        <h2>${escapeHTML(paper.title)}</h2>
+                        <p class="meta">By: ${escapeHTML(paper.authors)}</p>
+                        <p>${escapeHTML(paper.content)}</p>
+                    </div>
+                `).join('');
+            })
+            .catch(err => {
+                document.getElementById('papers-list').innerHTML = '<p>Error loading papers.</p>';
+                console.error(err);
+            });
+    </script>
+</body>
+</html>

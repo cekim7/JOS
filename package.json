@@ -1,0 +1,27 @@
+{
+  "name": "app",
+  "version": "1.0.0",
+  "description": "Journal of open sciences.",
+  "main": "index.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "echo \"Error: no test specified\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cekim7/JOS.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/cekim7/JOS/issues"
+  },
+  "homepage": "https://github.com/cekim7/JOS#readme",
+  "dependencies": {
+    "better-sqlite3": "^13.0.2",
+    "cors": "^2.8.6",
+    "express": "^5.2.1"
+  }
+}
