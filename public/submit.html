@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Submit Paper - Journal of Open Sciences</title>
+    <style>
+        body { font-family: sans-serif; margin: 2rem; }
+        nav { margin-bottom: 2rem; }
+        nav a { margin-right: 1rem; text-decoration: none; color: blue; }
+        form { display: flex; flex-direction: column; max-width: 500px; }
+        label { margin-top: 1rem; }
+        input, textarea { padding: 0.5rem; margin-top: 0.2rem; }
+        button { margin-top: 1.5rem; padding: 0.5rem; cursor: pointer; }
+        #message { margin-top: 1rem; font-weight: bold; }
+        .published { color: green; }
+        .rejected { color: red; }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="/">Home</a>
+        <a href="/submit.html">Submit Paper</a>
+    </nav>
+    <h1>Submit a New Paper</h1>
+    <p>Your paper will be automatically reviewed by our AI agent before publication.</p>
+
+    <form id="submit-form">
+        <label for="title">Title:</label>
+        <input type="text" id="title" required>
+
+        <label for="authors">Authors:</label>
+        <input type="text" id="authors" required>
+
+        <label for="content">Content:</label>
+        <textarea id="content" rows="10" required></textarea>
+
+        <button type="submit">Submit Paper</button>
+    </form>
+
+    <div id="message"></div>
+
+    <script>
+        document.getElementById('submit-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const messageDiv = document.getElementById('message');
+            messageDiv.innerHTML = 'Submitting and reviewing...';
+            messageDiv.className = '';
+
+            const title = document.getElementById('title').value;
+            const authors = document.getElementById('authors').value;
+            const content = document.getElementById('content').value;
+
+            try {
+                const res = await fetch('/api/papers', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ title, authors, content })
+                });
+
+                const data = await res.json();
+
+                if (!res.ok) {
+                    messageDiv.innerHTML = `Error: ${data.error}`;
+                    messageDiv.className = 'rejected';
+                } else {
+                    messageDiv.innerHTML = `
+                        Status: ${data.status.toUpperCase()}<br>
+                        AI Notes: ${data.ai_review_notes}
+                    `;
+                    messageDiv.className = data.status;
+
+                    if(data.status === 'published') {
+                        document.getElementById('submit-form').reset();
+                    }
+                }
+            } catch (err) {
+                messageDiv.innerHTML = 'Submission failed due to network error.';
+                messageDiv.className = 'rejected';
+                console.error(err);
+            }
+        });
+    </script>
+</body>
+</html>
